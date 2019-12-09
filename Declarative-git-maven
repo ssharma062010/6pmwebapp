@@ -3,8 +3,8 @@ pipeline{
   stages{
         stage('SCM Checkout'){
             steps{
-                git credentialsId: 'github' 
-                     url: 'https://github.com/ssharma062010/6pmwebapp'
+                  git credentialsId: 'github',
+                     url: 'https://github.com/ssharma062010/6pmwebapp',
                      branch 'master'
                   }
             }
