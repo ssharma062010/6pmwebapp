@@ -1,19 +1,20 @@
 pipeline{
     agent any
+  
   stages{
         stage('SCM Checkout'){
             steps{
                   git credentialsId: 'github',
-                     url: 'https://github.com/ssharma062010/6pmwebapp',
-                     branch 'master'
+                      url: 'https://github.com/ssharma062010/6pmwebapp',
+                      branch 'master'
                   }
             }
             
      stage('Maven Build'){
      steps{
-      script{
-         def mvnHome = tool name: 'maven3', type: 'maven'
-         sh script: "${mvnHome}/bin/mvn clean package"
+        script{
+               def mvnHome = tool name: 'maven3', type: 'maven'
+               sh script: "${mvnHome}/bin/mvn clean package"
          }
         }
      }       
