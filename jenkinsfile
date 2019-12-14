@@ -1,44 +1,34 @@
 pipeline{
-    
     agent any
     environment{
-        PATH = "${PATH}:${tool name: 'maven3', type: 'maven'}/bin"
-    }
+	  PATH = "${PATH}:${tool name: 'maven3', type: 'maven'}/bin"
+	}
     stages{
-       stage('Scm Checkout'){
-        steps{
-            git credentialsId: 'github', 
-				url: 'https://github.com/javahometech/6pmwebapp', 
-				branch: 'master'
+        stage('SCM Checkout'){
+            steps{
+                git url: 'https://github.com/javahometech/6pmwebapp',
+                branch: 'master',
+                credentialsId: 'github'
             }
+        }
 
-                            }
-          }
+        stage('Maven Build'){
+            steps{
+                sh 'mvn clean package'
+            }
+        }
 
-     stage('Mvn build'){
-         steps{
-
-             sh 'mvn clean package'
-         }
-  
-     }
-   stage('Deploy dev'){
-     steps{
-      
-      sshagent(['tomcat-dev']) {
-          //stop tomcat
-          sh "ssh -o strictHostKeyCheckings=no ec2-user@3.17.139.86 /opt/tomcat8/bin/shutdown.sh"
-    // deploy file to remote tomcat
-    sh "scp target/6pmwebapp.war ec2-user@3.17.139.86:/opt/tomcat8//webapp/"
-    
-    //start tomcat
-    sh "ssh ec2-user@3.17.139.86 /opt/tomcat8/bin/startup.sh"
-}
-
-     }
-
-   }
-
-
-
+        stage('Deploy Dev'){
+            steps{
+                sshagent(['tomcat-dev']) {
+                    // stop tomcat
+                    sh "ssh -o StrictHostKeyChecking=no ec2-user@3.17.139.86 /opt/tomcat8/bin/shutdown.sh"
+                    // copy war file to remote tomcat
+                    sh "scp target/6pmwebapp.war  ec2-user@3.17.139.86:/opt/tomcat8/webapps/"
+                    // start tomcat
+                    sh "ssh ec2-user@3.17.139.86 /opt/tomcat8/bin/startup.sh"
+                } 
+            }
+        }
+    }
 }
